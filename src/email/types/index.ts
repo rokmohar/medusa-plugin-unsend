@@ -1,16 +1,16 @@
-export interface UnsendPluginOptions {
+export interface UnsendEmailOptions {
   /**
    * Unsend URL
    */
-  url?: string;
+  url?: string
 
   /**
    * Unsend API Key
    */
-  apiKey: string;
+  api_key: string
 
   /**
    * From email address
    */
-  from: string;
+  from: string
 }
