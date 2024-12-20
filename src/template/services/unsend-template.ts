@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 import { MedusaError } from '@medusajs/utils'
+import { ModuleJoinerConfig } from '@medusajs/types'
+import { joinerConfig } from '../joiner-config'
 
 export type EmailTemplate = { subject: string } & (
   | {
@@ -14,6 +16,10 @@ export type EmailTemplate = { subject: string } & (
 
 export class UnsendTemplateService {
   private templates: Record<string, EmailTemplate> = {}
+
+  __joinerConfig(): ModuleJoinerConfig {
+    return joinerConfig
+  }
 
   hasTemplate(key: string) {
     return this.templates[key]

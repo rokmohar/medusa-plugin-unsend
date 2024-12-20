@@ -1,6 +1,6 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Unsend plugin for Medusa 2",
   "main": "dist/index.js",
   "files": [

@@ -1,8 +1,9 @@
 import { Unsend } from 'unsend'
-import { Logger, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
+import { Logger, ModuleJoinerConfig, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
 import { AbstractNotificationProviderService, MedusaError } from '@medusajs/utils'
 import { UnsendEmailOptions } from '../types'
 import { UnsendTemplateService } from '../../template'
+import { joinerConfig } from '../joiner-config'
 
 type SendEmailPayload = Parameters<Unsend['emails']['send']>[0]
 
@@ -28,6 +29,10 @@ export class UnsendEmailService extends AbstractNotificationProviderService {
     this.options = validOptions
     this.unsendTemplate = unsendTemplate
     this.logger = logger
+  }
+
+  __joinerConfig(): ModuleJoinerConfig {
+    return joinerConfig
   }
 
   async send(notification: ProviderSendNotificationDTO): Promise<ProviderSendNotificationResultsDTO> {

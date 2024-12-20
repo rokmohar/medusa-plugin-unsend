@@ -29,7 +29,6 @@ module.exports = defineConfig({
     // ... other modules
     {
       resolve: './src/modules/dev/unsend/template',
-      key: 'unsendTemplate',
     },
     {
       resolve: '@medusajs/medusa/notification', 
