@@ -1,11 +1,12 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Unsend plugin for Medusa 2",
   "main": "dist/index.js",
   "files": [
     "dist"
   ],
+
   "engines": {
     "node": ">=20"
   },
@@ -44,5 +45,9 @@
     "unsend",
     "medusa-plugin",
     "medusa-plugin-unsend"
-  ]
+  ],
+  "exports": {
+    "./email": "./dist/email/index.js",
+    "./template": "./dist/template/index.js"
+  }
 }
