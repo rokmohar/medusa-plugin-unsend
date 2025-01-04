@@ -1,4 +1,4 @@
-import * as UnsendEmail from './email'
-import * as UnsendTemplate from './template'
+import * as UnsendCore from './core'
+import * as UnsendNotification from './notification'
 
-export { UnsendEmail, UnsendTemplate }
+export { UnsendCore, UnsendNotification }

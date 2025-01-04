@@ -28,22 +28,24 @@ module.exports = defineConfig({
   modules: [
     // ... other modules
     {
-      resolve: './src/modules/dev/unsend/template',
+      resolve: '@rokmohar/medusa-plugin-unsend/core',
+      options: {
+        url: process.env.UNSEND_URL ?? '',
+        api_key: process.env.UNSEND_API_KEY ?? '',
+        from: process.env.UNSEND_FROM ?? '',
+      },
     },
     {
       resolve: '@medusajs/medusa/notification', 
-      dependencies: ['unsendTemplate'],
+      dependencies: ['unsend'],
       options: {
         providers: [
           // ... other providers
           {
-            resolve: './src/modules/dev/unsend/email',
+            resolve: '@rokmohar/medusa-plugin-unsend/notification',
             id: 'unsend',
             options: {
               channels: ['email'],
-              url: process.env.UNSEND_URL ?? '',
-              api_key: process.env.UNSEND_API_KEY ?? '',
-              from: process.env.UNSEND_FROM ?? '',
             },
           },
         ],
@@ -80,18 +82,18 @@ You must add the following subscribers to the `src/subscribers`:
 ### product-upsert.ts
 
 ```js
-import type { SubscriberArgs, SubscriberConfig } from '@medusajs/framework'
+import { SubscriberArgs, SubscriberConfig } from '@medusajs/framework'
 import { IProductModuleService } from '@medusajs/framework/types'
 import { Modules } from '@medusajs/framework/utils'
 import { ProductEvents, SearchUtils } from '@medusajs/utils'
-import { UnsendTemplateService } from '@rokmohar/medusa-plugin-unsend/template'
+import { UnsendService } from '@rokmohar/medusa-plugin-unsend/core'
 
 export default async function productUpsertHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
   const productId = data.id
 
   // Make sure template is registered, before creating email notifications
-  const unsendTemplateService: UnsendTemplateService = container.resolve('unsendTemplate')
-  unsendTemplateService.setTemplates({
+  const unsendService: UnsendService = container.resolve('unsend')
+    unsendService.setTemplates({
     'product-upsert': {
       subject: 'Product upsert-ed',
       html: '<b>Product upsert-ed</b>',
