@@ -1,6 +1,6 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Unsend plugin for Medusa 2",
   "main": "dist/index.js",
   "files": [
@@ -23,7 +23,7 @@
     "watch": "tsc --watch"
   },
   "devDependencies": {
-    "@medusajs/types": "^2.0.1",
+    "@medusajs/types": "^2.1.3",
     "@types/react": "18.3.1",
     "@types/react-dom": "18.3.1",
     "awilix": "^8.0.1",
@@ -33,8 +33,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@medusajs/modules-sdk": "^2.0.1",
-    "@medusajs/utils": "^2.0.1",
+    "@medusajs/modules-sdk": "^2.1.3",
+    "@medusajs/utils": "^2.1.3",
     "unsend": "^1.3.0"
   },
   "peerDependencies": {
