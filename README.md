@@ -1,4 +1,4 @@
-# medusa-plugin-unsend
+# Unsend plugin for MedusaJS v2
 
 ## Installation
 
