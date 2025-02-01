@@ -25,24 +25,27 @@ loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
   // ... other config
-  modules: [
-    // ... other modules
+  plugins: [
+    // ... other plugins
     {
-      resolve: '@rokmohar/medusa-plugin-unsend/core',
+      resolve: '@rokmohar/medusa-plugin-unsend',
       options: {
         url: process.env.UNSEND_URL ?? '',
         api_key: process.env.UNSEND_API_KEY ?? '',
         from: process.env.UNSEND_FROM ?? '',
       },
     },
+  ],
+  modules: [
+    // ... other modules
     {
-      resolve: '@medusajs/medusa/notification', 
+      resolve: '@medusajs/medusa/notification',
       dependencies: ['unsend'],
       options: {
         providers: [
           // ... other providers
           {
-            resolve: '@rokmohar/medusa-plugin-unsend/notification',
+            resolve: '@rokmohar/medusa-plugin-unsend',
             id: 'unsend',
             options: {
               channels: ['email'],

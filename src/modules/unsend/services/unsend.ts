@@ -1,23 +1,16 @@
 import { Unsend } from 'unsend'
-import { Logger, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
-import { AbstractNotificationProviderService, MedusaError } from '@medusajs/utils'
+import { MedusaError } from '@medusajs/utils'
+import { INotificationProvider, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
 import { UnsendEmailOptions, UnsendEmailTemplate } from '../types'
 
 type SendEmailPayload = Parameters<Unsend['emails']['send']>[0]
 
-interface InjectedDependencies {
-  logger: Logger
-}
-
-export class UnsendService extends AbstractNotificationProviderService {
-  private logger: Logger
+export class UnsendService implements INotificationProvider {
   private client: Unsend
   private options: UnsendEmailOptions
   private templates: Record<string, UnsendEmailTemplate> = {}
 
-  constructor({ logger }: InjectedDependencies, options: Record<any, any>) {
-    super()
-    this.logger = logger
+  constructor(_: any, options: Record<any, any>) {
     const validOptions = this.toPluginOptions(options)
     this.client = new Unsend(validOptions.api_key, validOptions?.url)
     this.options = validOptions

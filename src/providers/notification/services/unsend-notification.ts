@@ -1,21 +1,18 @@
-import { Logger, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
-import { AbstractNotificationProviderService, MedusaError } from '@medusajs/utils'
-import { UnsendService } from '../../core'
+import { ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
+import { AbstractNotificationProviderService } from '@medusajs/utils'
+import { UnsendService } from '../../../modules/unsend'
 
 interface InjectedDependencies {
-  logger: Logger
   unsend: UnsendService
 }
 
 export class UnsendNotificationService extends AbstractNotificationProviderService {
   static identifier = 'notification-unsend'
 
-  private logger: Logger
   private unsend: UnsendService
 
-  constructor({ logger, unsend }: InjectedDependencies) {
+  constructor({ unsend }: InjectedDependencies) {
     super()
-    this.logger = logger
     this.unsend = unsend
   }
 
@@ -23,5 +20,5 @@ export class UnsendNotificationService extends AbstractNotificationProviderServi
     return this.unsend.send(notification)
   }
 
-  static validateOptions(options: Record<any, any>) {}
+  static validateOptions() {}
 }
