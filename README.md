@@ -14,12 +14,19 @@ Or with **yarn**:
 yarn add @rokmohar/medusa-plugin-unsend
 ```
 
+## ⚠️ MedusaJS v2.4.0 or newer
+
+This plugin is only for MedusaJS v2.4.0 or newer.
+
+If you are using MedusaJS v2.3.1 or older, please use the [older version of this plugin](https://github.com/rokmohar/medusa-plugin-unsend/tree/v0.2.4).
+
 ## Configuration
 
 Add the plugin to your `medusa-config.ts` file:
 
 ```js
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { UNSEND_PROVIDER_PATH } from '@rokmohar/medusa-plugin-unsend'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -45,7 +52,7 @@ module.exports = defineConfig({
         providers: [
           // ... other providers
           {
-            resolve: '@rokmohar/medusa-plugin-unsend',
+            resolve: UNSEND_PROVIDER_PATH,
             id: 'unsend',
             options: {
               channels: ['email'],
