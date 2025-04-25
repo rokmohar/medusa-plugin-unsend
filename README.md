@@ -85,6 +85,30 @@ UNSEND_API_KEY=test_123456789
 UNSEND_FROM=no-reply@example.org
 ```
 
+## Email Templates
+
+The plugin automatically loads email templates from the `src/templates/emails` directory in your project root. Each template should be a TSX file that exports a React component as its default export.
+
+Example template structure:
+
+```tsx
+// src/templates/emails/ProductUpsert.tsx
+import React from 'react'
+
+const ProductUpsertEmail = (props: any) => {
+  return (
+    <div>
+      <h1>Product Updated</h1>
+      <p>Product ID: {props.productId}</p>
+    </div>
+  )
+}
+
+export default ProductUpsertEmail
+```
+
+The template name will be derived from the filename (without the .tsx extension). For example, `ProductUpsert.tsx` will be available as the template named `product-upsert`.
+
 ## Subscribers
 
 You must add the following subscribers to the `src/subscribers`:
@@ -98,19 +122,11 @@ import { Modules } from '@medusajs/framework/utils'
 import { ProductEvents, SearchUtils } from '@medusajs/utils'
 import { UnsendService } from '@rokmohar/medusa-plugin-unsend/core'
 
-export default async function productUpsertHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
+export default async function productCreatedHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
   const productId = data.id
 
   // Make sure template is registered, before creating email notifications
   const unsendService: UnsendService = container.resolve('unsend')
-    unsendService.setTemplates({
-    'product-upsert': {
-      subject: 'Product upsert-ed',
-      html: '<b>Product upsert-ed</b>',
-      // You can use React component from `@react-email` package
-      // react: ProductUpsertEmail,
-    },
-  })
 
   const notificationModuleService = container.resolve(Modules.NOTIFICATION)
   await notificationModuleService.createNotifications({

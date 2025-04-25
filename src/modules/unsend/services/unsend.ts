@@ -2,22 +2,24 @@ import { Unsend } from 'unsend'
 import { MedusaError } from '@medusajs/utils'
 import { INotificationProvider, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
 import { UnsendEmailOptions, UnsendEmailTemplate } from '../types'
+import { TemplateRepository } from '../repositories/template-repository'
 
 type SendEmailPayload = Parameters<Unsend['emails']['send']>[0]
 
 export class UnsendService implements INotificationProvider {
   private client: Unsend
   private options: UnsendEmailOptions
-  private templates: Record<string, UnsendEmailTemplate> = {}
+  private templateRepository: TemplateRepository
 
   constructor(_: any, options: Record<any, any>) {
     const validOptions = this.toPluginOptions(options)
     this.client = new Unsend(validOptions.api_key, validOptions?.url)
     this.options = validOptions
+    this.templateRepository = TemplateRepository.getInstance()
   }
 
   async send(notification: ProviderSendNotificationDTO): Promise<ProviderSendNotificationResultsDTO> {
-    const template = this.getTemplate(notification.template)
+    const template = this.templateRepository.getTemplate(notification.template)
 
     if (!template) {
       throw new MedusaError(
@@ -50,44 +52,35 @@ export class UnsendService implements INotificationProvider {
   }
 
   hasTemplate(key: string) {
-    return this.templates[key]
+    return this.templateRepository.hasTemplate(key)
   }
 
   getTemplate(key: string) {
-    return this.templates[key]
+    return this.templateRepository.getTemplate(key)
   }
 
   addTemplate(key: string, template: UnsendEmailTemplate) {
-    if (this.hasTemplate(key)) {
-      throw new MedusaError(MedusaError.Types.INVALID_DATA, `Template with key "${key}" already exists`)
-    }
-    this.templates[key] = template
+    this.templateRepository.addTemplate(key, template)
   }
 
   removeTemplate(key: string) {
-    delete this.templates[key]
+    this.templateRepository.removeTemplate(key)
   }
 
   setTemplates(templates: Record<string, UnsendEmailTemplate>) {
-    this.templates = templates
+    this.templateRepository.setTemplates(templates)
   }
 
   addTemplates(templates: Record<string, UnsendEmailTemplate>) {
-    Object.entries(templates).forEach(([key, template]) => {
-      this.addTemplate(key, template)
-    })
+    this.templateRepository.addTemplates(templates)
   }
 
   mergeTemplates(templates: Record<string, UnsendEmailTemplate>) {
-    Object.entries(templates).forEach(([key, template]) => {
-      this.templates[key] = template
-    })
+    this.templateRepository.mergeTemplates(templates)
   }
 
   removeTemplates(key: string[]) {
-    key.forEach((k) => {
-      this.removeTemplate(k)
-    })
+    this.templateRepository.removeTemplates(key)
   }
 
   static validateOptions(options: Record<any, any>) {

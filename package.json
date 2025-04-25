@@ -1,6 +1,6 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Unsend plugin for Medusa 2",
   "author": "Rok Mohar",
   "license": "MIT",
@@ -83,5 +83,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
