@@ -31,14 +31,14 @@ export default async ({ container, options }: LoaderOptions<UnsendEmailOptions>)
 
   try {
     const files = await readdir(templatesDir)
-    const templateFiles = files.filter((file) => file.endsWith('.tsx'))
+    const templateFiles = files.filter((file) => file.endsWith('.tsx') || file.endsWith('.js'))
 
     for (const file of templateFiles) {
       const filePath = join(templatesDir, file)
-      const metadataPath = join(templatesDir, file.replace('.tsx', '.json'))
+      const metadataPath = join(templatesDir, file.replace(/\.(tsx|js)$/, '.json'))
 
       // Extract the template name from the file name and convert to kebab-case
-      const templateName = toKebabCase(file.replace('.tsx', ''))
+      const templateName = toKebabCase(file.replace(/\.(tsx|js)$/, ''))
 
       // Load template metadata if it exists
       let metadata: TemplateMetadata = {}
