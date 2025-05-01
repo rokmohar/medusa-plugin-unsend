@@ -1,11 +1,27 @@
 import { MedusaError } from '@medusajs/utils'
 import { UnsendEmailTemplate } from '../types'
+import {
+  TemplateValidator,
+  RequiredFieldsRule,
+  ReactPropsRule,
+  HtmlValidationRule,
+  MetadataValidationRule,
+} from './template-validator'
 
 export class TemplateRepository {
   private static instance: TemplateRepository
   private templates: Record<string, UnsendEmailTemplate> = {}
+  private validator: TemplateValidator
 
-  private constructor() {}
+  private constructor() {
+    // Initialize validator with built-in rules
+    this.validator = new TemplateValidator([
+      new RequiredFieldsRule(),
+      new ReactPropsRule(),
+      new HtmlValidationRule(),
+      new MetadataValidationRule(),
+    ])
+  }
 
   public static getInstance(): TemplateRepository {
     if (!TemplateRepository.instance) {
@@ -26,6 +42,24 @@ export class TemplateRepository {
     if (this.hasTemplate(key)) {
       throw new MedusaError(MedusaError.Types.INVALID_DATA, `Template with key "${key}" already exists`)
     }
+
+    // Validate template before adding
+    const validationResult = this.validator.validate(template)
+    if (!validationResult.isValid) {
+      const errorMessages = validationResult.errors
+        .map((error) => `${error.path.join('.')}: ${error.message}`)
+        .join(', ')
+      throw new MedusaError(MedusaError.Types.INVALID_DATA, `Invalid template: ${errorMessages}`)
+    }
+
+    // Log warnings if any
+    if (validationResult.warnings.length > 0) {
+      const warningMessages = validationResult.warnings
+        .map((warning) => `${warning.path.join('.')}: ${warning.message}`)
+        .join(', ')
+      console.warn(`Template warnings for "${key}": ${warningMessages}`)
+    }
+
     this.templates[key] = template
   }
 

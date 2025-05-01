@@ -37,9 +37,44 @@ module.exports = defineConfig({
     {
       resolve: '@rokmohar/medusa-plugin-unsend',
       options: {
+        // Required options
         url: process.env.UNSEND_URL ?? '',
         api_key: process.env.UNSEND_API_KEY ?? '',
         from: process.env.UNSEND_FROM ?? '',
+
+        // Optional configuration
+        templateDir: 'custom/templates/path', // Custom template directory
+        retry: {
+          maxAttempts: 5, // Number of retry attempts for failed sends
+          delay: 2000, // Delay between retries in milliseconds
+        },
+        rateLimit: {
+          maxPerMinute: 30, // Maximum emails per minute
+        },
+        // Environment configurations based on NODE_ENV
+        environment: {
+          development: {
+            // Development-specific overrides
+            from: 'dev@example.com',
+            rateLimit: {
+              maxPerMinute: 25,
+            },
+          },
+          staging: {
+            // Staging-specific overrides
+            from: 'stage@example.com',
+            rateLimit: {
+              maxPerMinute: 50,
+            },
+          },
+          production: {
+            // Production-specific overrides
+            from: 'prod@example.com',
+            rateLimit: {
+              maxPerMinute: 100,
+            },
+          },
+        },
       },
     },
   ],
@@ -87,9 +122,12 @@ UNSEND_FROM=no-reply@example.org
 
 ## Email Templates
 
-The plugin automatically loads email templates from the `src/templates/emails` directory in your project root. Each template should be a TSX file that exports a React component as its default export.
+The plugin automatically loads email templates from the `src/templates/emails` directory in your project root (or a custom directory specified in the configuration). Each template consists of two files:
 
-Example template structure:
+1. A TSX file containing the React component
+2. An optional JSON file for template metadata
+
+### Template Structure
 
 ```tsx
 // src/templates/emails/ProductUpsert.tsx
@@ -104,10 +142,63 @@ const ProductUpsertEmail = (props: any) => {
   )
 }
 
+// Set email subject
+ProductUpsertEmail.Subject = 'Products upserted'
+
 export default ProductUpsertEmail
 ```
 
+The email subject is determined in the following order of precedence:
+
+1. `content.subject` provided in the `createNotifications` call
+2. `subject` field in the template's metadata JSON file
+3. `ComponentName.Subject` static property in the TSX file
+4. Kebab-case template name (derived from the filename)
+
+For example, if you have a template named `ProductUpsert.tsx`, the subject will fall back to `product-upsert` if no other subject is specified.
+
+```json
+// src/templates/emails/ProductUpsert.json
+{
+  "version": "1.0.0",
+  "subject": "Product upsert",
+  "description": "Email template for product updates",
+  "tags": ["product", "update"],
+  "category": "product-notifications"
+}
+```
+
 The template name will be derived from the filename (without the .tsx extension). For example, `ProductUpsert.tsx` will be available as the template named `product-upsert`.
+
+### Template Metadata
+
+The JSON file is optional and can contain the following fields:
+
+- `version`: Template version (defaults to "1.0.0")
+- `subject`: Template subject
+- `description`: Template description
+- `tags`: Array of tags for categorizing templates
+- `category`: Template category
+
+### Email Subject Precedence
+
+The email subject is determined in the following order of precedence:
+
+1. `content.subject` provided in the `createNotifications` call
+2. `subject` field in the template's metadata JSON file
+3. `ComponentName.Subject` static property in the TSX file
+4. Kebab-case template name (derived from the filename)
+
+For example, if you have a template named `ProductUpsert.tsx`, the subject will fall back to `product-upsert` if no other subject is specified.
+
+## Features
+
+- **Environment-specific Configuration**: Override settings for different environments (development, staging, production)
+- **Rate Limiting**: Prevent overwhelming the email service with configurable limits
+- **Retry Mechanism**: Automatic retries for failed email sends with exponential backoff
+- **Template Versioning**: Track template versions and changes
+- **Template Metadata**: Add descriptions, tags, and categories to templates
+- **Custom Template Directory**: Configure the location of your email templates
 
 ## Subscribers
 
@@ -134,6 +225,10 @@ export default async function productCreatedHandler({ event: { data }, container
     channel: 'email',
     // Use name of the registered template
     template: 'product-upsert',
+    // Set email subject
+    content: {
+      subject: 'Product upserted',
+    },
   })
 }
 
