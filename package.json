@@ -1,6 +1,6 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Unsend plugin for Medusa 2",
   "author": "Rok Mohar",
   "license": "MIT",
@@ -9,11 +9,12 @@
     "url": "https://github.com/rokmohar/medusa-plugin-unsend.git"
   },
   "keywords": [
-    "plugin",
     "medusa",
     "medusa-v2",
     "medusa-plugin",
-    "medusa-plugin-unsend"
+    "medusa-plugin-integration",
+    "medusa-plugin-notification",
+    "medusa-plugin-usend"
   ],
   "files": [
     ".medusa/server"
