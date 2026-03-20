@@ -52,6 +52,12 @@ export class UnsendService implements INotificationProvider {
       emailOptions.html = template.content.html
     }
 
+    const attachments = notification.data?.attachments
+
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      emailOptions.attachments = attachments
+    }
+
     return this.sendWithRetry(emailOptions)
   }
 

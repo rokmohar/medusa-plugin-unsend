@@ -1,5 +1,5 @@
 export { UnsendService } from './modules/unsend/services'
-export { UnsendEmailOptions, UnsendEmailTemplate } from './modules/unsend/types'
+export { UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from './modules/unsend/types'
 
 let resolvedPath = require.resolve('@rokmohar/medusa-plugin-unsend')
 

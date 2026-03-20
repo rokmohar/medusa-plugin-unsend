@@ -111,6 +111,18 @@ export interface TemplateMetadata {
   category?: string
 }
 
+export interface UnsendEmailAttachment {
+  /**
+   * Attachment filename including extension, e.g. 'invoice-PP1-R1-42.pdf'
+   */
+  filename: string
+
+  /**
+   * Base64-encoded file content
+   */
+  content: string
+}
+
 export interface UnsendEmailTemplate {
   /**
    * Email subject line
