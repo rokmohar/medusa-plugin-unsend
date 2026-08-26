@@ -1,11 +1,10 @@
-import { LoaderOptions } from '@medusajs/types'
+import { LoaderOptions, Logger } from '@medusajs/framework/types'
 import { UnsendEmailOptions, UnsendEmailTemplate } from '../types'
 import { UnsendService } from '../services'
 import { readdir, readFile } from 'fs/promises'
 import { join } from 'path'
 import { toKebabCase } from '../utils'
-import { Logger } from '@medusajs/types'
-import { asValue } from 'awilix'
+import { asValue } from '@medusajs/framework/awilix'
 
 interface TemplateMetadata {
   version?: string
@@ -61,8 +60,12 @@ export default async ({ container, options }: LoaderOptions<UnsendEmailOptions>)
         }
       }
 
-      // Dynamically import the TSX file
-      const Component = (await import(filePath)).default
+      // Load the TSX/JS file. `require` keeps CommonJS semantics, which is what
+      // allows the consuming Medusa app to load `.tsx` templates through its
+      // ts-node hook in development, and compiled `.js` templates in production.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const imported = require(filePath)
+      const Component = imported.default ?? imported
 
       // Create a template object
       const template: UnsendEmailTemplate = {

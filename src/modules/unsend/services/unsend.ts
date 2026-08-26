@@ -1,7 +1,11 @@
 import { Unsend } from 'unsend'
-import { MedusaError } from '@medusajs/utils'
-import { INotificationProvider, ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
-import { UnsendEmailOptions, UnsendEmailTemplate } from '../types'
+import { MedusaError } from '@medusajs/framework/utils'
+import {
+  INotificationProvider,
+  ProviderSendNotificationDTO,
+  ProviderSendNotificationResultsDTO,
+} from '@medusajs/framework/types'
+import { UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from '../types'
 import { TemplateRepository } from '../templates/template-repository'
 import { RateLimiter } from '../utils/rate-limiter'
 import { RetryStrategy } from '../utils/retry-strategy'
@@ -52,10 +56,13 @@ export class UnsendService implements INotificationProvider {
       emailOptions.html = template.content.html
     }
 
-    const attachments = notification.data?.attachments
+    // Medusa passes attachments as a top-level field. The legacy `data.attachments`
+    // location is still supported for backwards compatibility.
+    const attachments =
+      notification.attachments ?? (notification.data?.attachments as UnsendEmailAttachment[] | undefined)
 
     if (Array.isArray(attachments) && attachments.length > 0) {
-      emailOptions.attachments = attachments
+      emailOptions.attachments = attachments.map(({ filename, content }) => ({ filename, content }))
     }
 
     return this.sendWithRetry(emailOptions)

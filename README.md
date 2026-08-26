@@ -14,9 +14,11 @@ Or with **yarn**:
 yarn add @rokmohar/medusa-plugin-unsend
 ```
 
-## ⚠️ MedusaJS v2.4.0 or newer
+## ⚠️ MedusaJS v2.19.0 or newer
 
-This plugin is only for MedusaJS v2.4.0 or newer.
+This plugin is only for MedusaJS v2.19.0 or newer.
+
+If you are using MedusaJS v2.4.0 - v2.18.x, please use the [v1.0.8 version of this plugin](https://github.com/rokmohar/medusa-plugin-unsend/tree/v1.0.8).
 
 If you are using MedusaJS v2.3.1 or older, please use the [older version of this plugin](https://github.com/rokmohar/medusa-plugin-unsend/tree/v0.2.4).
 
@@ -26,7 +28,6 @@ Add the plugin to your `medusa-config.ts` file:
 
 ```js
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
-import { UNSEND_PROVIDER_PATH } from '@rokmohar/medusa-plugin-unsend'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
@@ -87,7 +88,7 @@ module.exports = defineConfig({
         providers: [
           // ... other providers
           {
-            resolve: UNSEND_PROVIDER_PATH,
+            resolve: '@rokmohar/medusa-plugin-unsend/providers/notification',
             id: 'unsend',
             options: {
               channels: ['email'],
@@ -98,6 +99,22 @@ module.exports = defineConfig({
     },
   ],
 })
+```
+
+Instead of the `@rokmohar/medusa-plugin-unsend/providers/notification` path, you can also use the exported
+`UNSEND_PROVIDER_PATH` constant, which resolves to the same provider:
+
+```js
+import { UNSEND_PROVIDER_PATH } from '@rokmohar/medusa-plugin-unsend'
+
+// ...
+{
+  resolve: UNSEND_PROVIDER_PATH,
+  id: 'unsend',
+  options: {
+    channels: ['email'],
+  },
+}
 ```
 
 ## ENV variables
@@ -191,8 +208,31 @@ The email subject is determined in the following order of precedence:
 
 For example, if you have a template named `ProductUpsert.tsx`, the subject will fall back to `product-upsert` if no other subject is specified.
 
+## Attachments
+
+Attachments are passed as a top-level `attachments` field of the `createNotifications` call. Each attachment
+requires a `filename` and a base64-encoded `content`:
+
+```js
+await notificationModuleService.createNotifications({
+  to: 'first.last@example.org',
+  channel: 'email',
+  template: 'product-upsert',
+  attachments: [
+    {
+      filename: 'invoice.pdf',
+      content: base64EncodedContent,
+    },
+  ],
+})
+```
+
+Passing the attachments in `data.attachments` is still supported for backwards compatibility. Unsend only accepts
+`filename` and `content`, so any other field of the Medusa attachment (`content_type`, `disposition`, `id`) is ignored.
+
 ## Features
 
+- **Attachments**: Send file attachments with your emails
 - **Environment-specific Configuration**: Override settings for different environments (development, staging, production)
 - **Rate Limiting**: Prevent overwhelming the email service with configurable limits
 - **Retry Mechanism**: Automatic retries for failed email sends with exponential backoff
@@ -210,8 +250,8 @@ You must add the following subscribers to the `src/subscribers`:
 import { SubscriberArgs, SubscriberConfig } from '@medusajs/framework'
 import { IProductModuleService } from '@medusajs/framework/types'
 import { Modules } from '@medusajs/framework/utils'
-import { ProductEvents, SearchUtils } from '@medusajs/utils'
-import { UnsendService } from '@rokmohar/medusa-plugin-unsend/core'
+import { ProductEvents } from '@medusajs/framework/utils'
+import { UnsendService } from '@rokmohar/medusa-plugin-unsend'
 
 export default async function productCreatedHandler({ event: { data }, container }: SubscriberArgs<{ id: string }>) {
   const productId = data.id
@@ -247,6 +287,6 @@ services:
 
   unsend:
     image: 'unsend/unsend:latest'
-    port:
+    ports:
       - '3000:3000'
 ```

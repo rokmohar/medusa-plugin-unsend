@@ -1,12 +1,8 @@
+import { join } from 'path'
+
 export { UnsendService } from './modules/unsend/services'
-export { UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from './modules/unsend/types'
+export type { UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from './modules/unsend/types'
 
-let resolvedPath = require.resolve('@rokmohar/medusa-plugin-unsend')
-
-if (resolvedPath.endsWith('.js')) {
-  resolvedPath = resolvedPath.substring(0, resolvedPath.lastIndexOf('/'))
-}
-
-const UNSEND_PROVIDER_PATH = `${resolvedPath}/providers/notification`
+const UNSEND_PROVIDER_PATH = join(__dirname, 'providers', 'notification')
 
 export { UNSEND_PROVIDER_PATH }

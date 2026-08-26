@@ -1,4 +1,4 @@
-import { ModuleProvider, Modules } from '@medusajs/utils'
+import { ModuleProvider, Modules } from '@medusajs/framework/utils'
 import { UnsendNotificationService } from './services'
 
 export * from './services'

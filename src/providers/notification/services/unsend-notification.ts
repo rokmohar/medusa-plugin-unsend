@@ -1,5 +1,5 @@
-import { ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/types'
-import { AbstractNotificationProviderService } from '@medusajs/utils'
+import { ProviderSendNotificationDTO, ProviderSendNotificationResultsDTO } from '@medusajs/framework/types'
+import { AbstractNotificationProviderService } from '@medusajs/framework/utils'
 import { UnsendService } from '../../../modules/unsend'
 
 interface InjectedDependencies {

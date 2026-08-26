@@ -1,4 +1,4 @@
-import { Module } from '@medusajs/utils'
+import { Module } from '@medusajs/framework/utils'
 import Loader from './loaders'
 import { UnsendService } from './services'
 

@@ -1,6 +1,6 @@
 {
   "name": "@rokmohar/medusa-plugin-unsend",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Unsend plugin for Medusa 2",
   "author": "Rok Mohar",
   "license": "MIT",
@@ -20,6 +20,19 @@
     ".medusa/server"
   ],
   "main": ".medusa/server/src/index.js",
+  "types": ".medusa/server/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./.medusa/server/src/index.d.ts",
+      "default": "./.medusa/server/src/index.js"
+    },
+    "./package.json": "./package.json",
+    "./.medusa/server/src/modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./.medusa/server/src/providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./modules/*": "./.medusa/server/src/modules/*/index.js",
+    "./providers/*": "./.medusa/server/src/providers/*/index.js",
+    "./*": "./.medusa/server/src/*.js"
+  },
   "scripts": {
     "build": "medusa plugin:build",
     "dev": "medusa plugin:develop",
@@ -31,45 +44,43 @@
     "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --cache --cache-strategy content --log-level warn"
   },
   "dependencies": {
-    "unsend": "1.4.2"
+    "unsend": "1.5.1"
   },
   "devDependencies": {
-    "@medusajs/admin-sdk": "^2.13.4",
-    "@medusajs/cli": "^2.13.4",
-    "@medusajs/framework": "^2.13.4",
-    "@medusajs/icons": "^2.13.4",
-    "@medusajs/medusa": "^2.13.4",
-    "@medusajs/ui": "^4.1.4",
-    "@swc/core": "^1.15.18",
-    "@types/node": "^22",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "awilix": "^8.0.1",
-    "eslint": "^9",
+    "@medusajs/admin-sdk": "2.19.0",
+    "@medusajs/cli": "2.19.0",
+    "@medusajs/framework": "2.19.0",
+    "@medusajs/icons": "2.19.0",
+    "@medusajs/medusa": "2.19.0",
+    "@medusajs/ui": "4.2.1",
+    "@swc/core": "^1.16.1",
+    "@types/node": "^22.20.1",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "globals": "^16",
-    "prettier": "^3.8.1",
-    "react": "^18",
-    "react-dom": "^18",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5",
-    "typescript-eslint": "^8.57.1",
-    "vite": "^5.4.21",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.68.0",
+    "vite": "^7.3.6",
     "yalc": "^1.0.0-pre.53"
   },
   "peerDependencies": {
-    "@medusajs/admin-sdk": "^2.13.4",
-    "@medusajs/framework": "^2.13.4",
-    "@medusajs/icons": "^2.13.4",
-    "@medusajs/medusa": "^2.13.4",
-    "@medusajs/ui": "^4.1.0",
-    "awilix": "^8.0.1",
-    "react": "^18",
-    "react-dom": "^18"
+    "@medusajs/admin-sdk": "^2.19.0",
+    "@medusajs/framework": "^2.19.0",
+    "@medusajs/icons": "^2.19.0",
+    "@medusajs/medusa": "^2.19.0",
+    "@medusajs/ui": "^4.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "packageManager": "yarn@1.22.22"
 }

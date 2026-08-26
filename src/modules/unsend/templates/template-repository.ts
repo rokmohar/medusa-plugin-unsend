@@ -1,4 +1,4 @@
-import { MedusaError } from '@medusajs/utils'
+import { MedusaError } from '@medusajs/framework/utils'
 import { UnsendEmailTemplate } from '../types'
 import {
   TemplateValidator,
