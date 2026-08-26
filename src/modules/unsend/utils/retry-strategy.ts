@@ -1,3 +1,5 @@
+import { toError } from './type-guards'
+
 export interface RetryOptions {
   maxAttempts: number
   delay: number
@@ -22,7 +24,7 @@ export class RetryStrategy {
       try {
         return await operation()
       } catch (error) {
-        lastError = error as Error
+        lastError = toError(error)
         if (attempt < this.options.maxAttempts) {
           const waitTime = this.calculateWaitTime(attempt)
           await new Promise((resolve) => setTimeout(resolve, waitTime))

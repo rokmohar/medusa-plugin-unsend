@@ -5,12 +5,43 @@ import {
   ProviderSendNotificationDTO,
   ProviderSendNotificationResultsDTO,
 } from '@medusajs/framework/types'
-import { UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from '../types'
+import { EnvironmentConfig, UnsendEmailAttachment, UnsendEmailOptions, UnsendEmailTemplate } from '../types'
 import { TemplateRepository } from '../templates/template-repository'
 import { RateLimiter } from '../utils/rate-limiter'
 import { RetryStrategy } from '../utils/retry-strategy'
+import { isRecord, readString } from '../utils/type-guards'
 
 type SendEmailPayload = Parameters<Unsend['emails']['send']>[0]
+type SendEmailError = NonNullable<Awaited<ReturnType<Unsend['emails']['send']>>['error']>
+
+const ENVIRONMENTS = ['development', 'staging', 'production'] as const satisfies readonly (keyof EnvironmentConfig)[]
+type EnvironmentName = (typeof ENVIRONMENTS)[number]
+
+const isEnvironmentName = (value: string): value is EnvironmentName => ENVIRONMENTS.some((name) => name === value)
+
+const isAttachment = (value: unknown): value is UnsendEmailAttachment =>
+  isRecord(value) && readString(value, 'filename') !== undefined && readString(value, 'content') !== undefined
+
+const toAttachments = (value: unknown): UnsendEmailAttachment[] =>
+  Array.isArray(value) ? value.filter(isAttachment) : []
+
+const formatSendError = (error: SendEmailError): string => {
+  const source: unknown = error
+
+  if (!isRecord(source)) {
+    return String(source)
+  }
+
+  const detail = isRecord(source.error) ? source.error : source
+  const message = readString(detail, 'message')
+  const code = readString(detail, 'code')
+
+  if (!message) {
+    return code ?? JSON.stringify(error)
+  }
+
+  return code ? `${message} (${code})` : message
+}
 
 export class UnsendService implements INotificationProvider {
   private client: Unsend
@@ -58,10 +89,9 @@ export class UnsendService implements INotificationProvider {
 
     // Medusa passes attachments as a top-level field. The legacy `data.attachments`
     // location is still supported for backwards compatibility.
-    const attachments =
-      notification.attachments ?? (notification.data?.attachments as UnsendEmailAttachment[] | undefined)
+    const attachments = toAttachments(notification.attachments ?? notification.data?.attachments)
 
-    if (Array.isArray(attachments) && attachments.length > 0) {
+    if (attachments.length > 0) {
       emailOptions.attachments = attachments.map(({ filename, content }) => ({ filename, content }))
     }
 
@@ -150,10 +180,9 @@ export class UnsendService implements INotificationProvider {
 
     // Environment configuration validation
     if (options.environment) {
-      const validEnvs = ['development', 'staging', 'production']
       Object.keys(options.environment).forEach((env) => {
-        if (!validEnvs.includes(env)) {
-          errors.push(`Invalid environment "${env}". Must be one of: ${validEnvs.join(', ')}`)
+        if (!isEnvironmentName(env)) {
+          errors.push(`Invalid environment "${env}". Must be one of: ${ENVIRONMENTS.join(', ')}`)
         }
       })
     }
@@ -165,7 +194,7 @@ export class UnsendService implements INotificationProvider {
 
   private applyEnvironmentConfig(options: UnsendEmailOptions): UnsendEmailOptions {
     const env = process.env.NODE_ENV || 'development'
-    const envConfig = options.environment?.[env as keyof typeof options.environment]
+    const envConfig = isEnvironmentName(env) ? options.environment?.[env] : undefined
 
     if (envConfig) {
       return {
@@ -203,7 +232,7 @@ export class UnsendService implements INotificationProvider {
       const { data, error } = await this.client.emails.send(emailOptions)
 
       if (error) {
-        throw new MedusaError(MedusaError.Types.INVALID_DATA, `Failed to send email: ${error?.message}`)
+        throw new MedusaError(MedusaError.Types.INVALID_DATA, `Failed to send email: ${formatSendError(error)}`)
       }
       if (!data) {
         throw new MedusaError(MedusaError.Types.INVALID_DATA, 'No data returned')
