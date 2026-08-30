@@ -4714,6 +4714,15 @@
     prettier "^3.5.3"
     react-promise-suspense "^0.3.4"
 
+"@react-email/render@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@react-email/render/-/render-1.4.0.tgz#063444dec21f98c43b6b592d474b5403c7827dd8"
+  integrity sha512-ZtJ3noggIvW1ZAryoui95KJENKdCzLmN5F7hyZY1F/17B1vwzuxHB7YkuCg0QqHjDivc5axqYEYdIOw4JIQdUw==
+  dependencies:
+    html-to-text "^9.0.5"
+    prettier "^3.5.3"
+    react-promise-suspense "^0.3.4"
+
 "@react-stately/calendar@^3.7.0":
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/@react-stately/calendar/-/calendar-3.7.0.tgz#2c1391173a077734f74e1e27cab6da333ca1d0e5"

@@ -1,4 +1,5 @@
 import { Unsend } from 'unsend'
+import { render } from '@react-email/render'
 import { MedusaError } from '@medusajs/framework/utils'
 import {
   INotificationProvider,
@@ -82,7 +83,7 @@ export class UnsendService implements INotificationProvider {
     }
 
     if (template.content.react) {
-      emailOptions.react = template.content.react(notification.data)
+      emailOptions.html = await this.renderTemplate(notification.template, template.content.react, notification.data)
     } else if (template.content.html) {
       emailOptions.html = template.content.html
     }
@@ -204,6 +205,20 @@ export class UnsendService implements INotificationProvider {
     }
 
     return options
+  }
+
+  private async renderTemplate(
+    name: string,
+    component: NonNullable<UnsendEmailTemplate['content']['react']>,
+    data: ProviderSendNotificationDTO['data'],
+  ): Promise<string> {
+    try {
+      return await render(component(data))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+
+      throw new MedusaError(MedusaError.Types.INVALID_DATA, `Failed to render email template "${name}": ${message}`)
+    }
   }
 
   private async checkRateLimit(): Promise<void> {

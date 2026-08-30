@@ -144,6 +144,8 @@ The plugin automatically loads email templates from the `src/templates/emails` d
 1. A TSX file containing the React component
 2. An optional JSON file for template metadata
 
+Templates are rendered to HTML by the plugin, with the `react` and `react-dom` of your application, before they are sent. The React version bundled with the Unsend SDK is never used.
+
 ### Template Structure
 
 ```tsx
